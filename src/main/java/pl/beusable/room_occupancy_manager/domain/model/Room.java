@@ -1,4 +1,4 @@
-package pl.beusable.earnings_forecast.domain.model;
+package pl.beusable.room_occupancy_manager.domain.model;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

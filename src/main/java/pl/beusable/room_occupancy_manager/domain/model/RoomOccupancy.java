@@ -1,12 +1,12 @@
-package pl.beusable.earnings_forecast.domain.model;
+package pl.beusable.room_occupancy_manager.domain.model;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public record EarningForecast(BigDecimal premiumRoomPrice, int premiumRoomCount, BigDecimal economyRoomPrice,
-                              int economyRoomCount) {
+public record RoomOccupancy(BigDecimal premiumRoomPrice, int premiumRoomCount, BigDecimal economyRoomPrice,
+                            int economyRoomCount) {
 
-    public static EarningForecast from(RoomList roomList) {
+    public static RoomOccupancy from(RoomList roomList) {
         List<Room> occupiedRooms = roomList.getRooms().stream()
                 .filter(Room::isOccupied)
                 .toList();
@@ -23,6 +23,6 @@ public record EarningForecast(BigDecimal premiumRoomPrice, int premiumRoomCount,
         BigDecimal economyRoomPrice = occupiedEconomyRooms.stream().map(Room::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return new EarningForecast(premiumRoomPrice, occupiedPremiumRooms.size(), economyRoomPrice, occupiedEconomyRooms.size());
+        return new RoomOccupancy(premiumRoomPrice, occupiedPremiumRooms.size(), economyRoomPrice, occupiedEconomyRooms.size());
     }
 }

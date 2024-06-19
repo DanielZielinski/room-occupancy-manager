@@ -1,13 +1,13 @@
-package pl.beusable.earnings_forecast.domain;
+package pl.beusable.room_occupancy_manager.domain;
 
 import org.springframework.stereotype.Service;
-import pl.beusable.earnings_forecast.domain.model.PossiblePayment;
+import pl.beusable.room_occupancy_manager.domain.model.PossiblePayment;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 @Service
-class PossiblePaymentsProviderImpl implements PossiblePaymentsProvider {
+class RoomOccupancyPossiblePaymentsProviderImpl implements RoomOccupancyPossiblePaymentsProvider {
 
     @Override
     public List<PossiblePayment> getPremiumPossiblePayments() {
