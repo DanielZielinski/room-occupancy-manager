@@ -21,14 +21,14 @@ public class RoomList {
     }
 
 
-    public boolean bookRoom(RoomType type, PossiblePayment possiblePayment) {
-        return rooms.stream().filter(r -> r.getType() == type && r.isNotOccupied())
+    public void bookRoom(RoomType type, PossiblePayment possiblePayment) {
+        rooms.stream()
+                .filter(r -> r.getType() == type && r.isNotOccupied())
                 .findFirst()
-                .map(room -> {
-                    possiblePayment.setUsed(true);
-                    return room.book(possiblePayment.getPrice());
-                })
-                .orElse(false);
+                .ifPresent(room -> {
+                    boolean booked = room.book(possiblePayment.getPrice());
+                    possiblePayment.setUsed(booked);
+                });
     }
 
     public int numberOfRooms(RoomType type) {
@@ -41,13 +41,6 @@ public class RoomList {
     public int numberOfNotOccupiedRooms(RoomType type) {
         return rooms.stream()
                 .filter(room -> room.getType() == type && room.isNotOccupied())
-                .toList()
-                .size();
-    }
-
-    public int numberOfOccupiedRooms(RoomType type) {
-        return rooms.stream()
-                .filter(room -> room.getType() == type && room.isOccupied())
                 .toList()
                 .size();
     }

@@ -19,22 +19,38 @@ class RoomOccupancyEconomyBookingImpl implements RoomOccupancyEconomyBooking {
 
         List<PossiblePayment> economyPossiblePayments = roomOccupancyPossiblePaymentsProvider.getEconomyPossiblePayments();
 
-        if (roomList.numberOfRooms(RoomType.ECONOMY) < economyPossiblePayments.size()) {
-            int possibleEconomyToPremiumUpgrades = calculatePossibleEconomyToPremiumUpgrades(roomList, economyPossiblePayments);
-
-            for (int i = 0; i < possibleEconomyToPremiumUpgrades; i++) {
-                PossiblePayment possiblePayment = economyPossiblePayments.get(i);
-                roomList.bookRoom(RoomType.PREMIUM, possiblePayment);
-            }
-            economyPossiblePayments.stream().filter(possiblePayment -> !possiblePayment.isUsed())
-                    .forEach(possiblePayment -> roomList.bookRoom(RoomType.ECONOMY, possiblePayment));
+        if (notEnoughEconomyRooms(roomList, economyPossiblePayments)) {
+            bookEconomyInPremium(roomList, economyPossiblePayments);
+            bookRestOfEconomyInEconomy(roomList, economyPossiblePayments);
         } else {
-            economyPossiblePayments.forEach(possiblePayment -> roomList.bookRoom(RoomType.ECONOMY, possiblePayment));
+            bookAlInEconomy(roomList, economyPossiblePayments);
         }
     }
 
-    private int calculatePossibleEconomyToPremiumUpgrades(RoomList roomList, List<PossiblePayment> economyPossiblePayments) {
+    private void bookEconomyInPremium(RoomList roomList, List<PossiblePayment> economyPossiblePayments){
+        int possibleUpgrades = calculatePossibleUpgrades(roomList, economyPossiblePayments);
+        for (int i = 0; i < possibleUpgrades; i++) {
+            roomList.bookRoom(RoomType.PREMIUM, economyPossiblePayments.get(i));
+        }
+    }
+
+    private void bookRestOfEconomyInEconomy(RoomList roomList, List<PossiblePayment> economyPossiblePayments){
+        economyPossiblePayments
+                .stream()
+                .filter(possiblePayment -> !possiblePayment.isUsed())
+                .forEach(possiblePayment -> roomList.bookRoom(RoomType.ECONOMY, possiblePayment));
+    }
+
+    private void bookAlInEconomy(RoomList roomList, List<PossiblePayment> economyPossiblePayments){
+        economyPossiblePayments.forEach(possiblePayment -> roomList.bookRoom(RoomType.ECONOMY, possiblePayment));
+    }
+
+    private int calculatePossibleUpgrades(RoomList roomList, List<PossiblePayment> economyPossiblePayments) {
         int missingEconomyRooms = economyPossiblePayments.size() - roomList.numberOfRooms(RoomType.ECONOMY);
         return Math.min(missingEconomyRooms, roomList.numberOfNotOccupiedRooms(RoomType.PREMIUM));
+    }
+
+    private boolean notEnoughEconomyRooms(RoomList roomList, List<PossiblePayment> economyPossiblePayments) {
+        return roomList.numberOfRooms(RoomType.ECONOMY) < economyPossiblePayments.size();
     }
 }
